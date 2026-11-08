@@ -1,0 +1,11 @@
+{
+  "name": "suminmom-promo-video",
+  "version": "1.0.0",
+  "description": "Suminmom promo video",
+  "scripts": {},
+  "license": "ISC",
+  "dependencies": {
+    "maplibre-gl": "5.24.0"
+  },
+  "private": true
+}

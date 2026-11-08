@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Road to Suminmom</title>
+<link rel="stylesheet" href="node_modules/maplibre-gl/dist/maplibre-gl.css">
+<style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url(assets/fonts/Pretendard-Medium.woff2) format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:600;src:url(assets/fonts/Pretendard-SemiBold.woff2) format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:700;src:url(assets/fonts/Pretendard-Bold.woff2) format('woff2')}
+@font-face{font-family:'Pretendard';font-weight:800;src:url(assets/fonts/Pretendard-ExtraBold.woff2) format('woff2')}
+@font-face{font-family:'Batang';font-weight:700;src:url(assets/fonts/GowunBatang-Bold.woff2) format('woff2')}
+@font-face{font-family:'Corm';font-style:italic;font-weight:500;src:url(assets/fonts/CormorantGaramond-Italic.woff2) format('woff2')}
+:root{--W:1080px;--H:1920px;--cream:#FBF6EE;--sand:#E9DCC7;--gold:#B0854F;--gold2:#CDA86E;--brown:#3D3029;--brown2:#6E5C50;--rose:#D58C84;--blush:#F3D7CF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:var(--W);height:var(--H);overflow:hidden;background:#000}
+#stage{position:absolute;left:0;top:0;width:var(--W);height:var(--H);overflow:hidden;background:#cfe3f2;font-family:'Pretendard',sans-serif;color:var(--brown);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+#map{position:absolute;left:0;top:0;width:var(--W);height:var(--H)}
+.maplibregl-ctrl-attrib,.maplibregl-ctrl-logo{display:none!important}
+.layer{position:absolute;left:0;top:0;width:var(--W);height:var(--H);pointer-events:none}
+.a{position:absolute}
+#glow{background:radial-gradient(ellipse at 50% 0%,rgba(255,244,236,.35),rgba(255,244,236,0) 55%)}
+#veil{background:linear-gradient(180deg,rgba(251,246,238,.96) 0%,rgba(251,246,238,.88) 32%,rgba(251,246,238,0) 56%)}
+#title{left:0;top:330px;width:var(--W);text-align:center}
+#title .k{font-size:26px;font-weight:800;letter-spacing:.32em;text-indent:.32em;color:var(--rose)}
+#title .t{font-family:'Batang',serif;font-weight:700;font-size:116px;line-height:1.18;margin-top:22px;letter-spacing:-.02em}
+#title .s{font-size:38px;font-weight:600;color:var(--brown2);margin-top:28px}
+#brand{left:0;right:0;margin:0 auto;width:max-content;top:96px;display:flex;align-items:center;gap:14px;padding:10px 24px 10px 20px;border-radius:999px;background:rgba(251,246,238,.9);box-shadow:0 6px 18px rgba(60,40,20,.16)}
+#brand b{font-family:'Batang',serif;font-weight:700;font-size:28px}
+#brand span{font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--gold);padding-left:14px;border-left:2px solid var(--sand)}
+#remain{left:0;right:0;margin:0 auto;width:max-content;top:184px;display:flex;align-items:baseline;gap:12px;padding:10px 26px;border-radius:999px;background:rgba(61,48,41,.78);color:#fff;font-size:26px;font-weight:700}
+#remain b{font-size:36px;font-weight:800;color:#ffd9cf}
+#cap{left:0;right:0;margin:0 auto;width:max-content;top:262px;display:flex;align-items:center;gap:22px;padding:18px 46px 18px 26px;border-radius:999px;background:rgba(251,246,238,.95);box-shadow:0 18px 44px rgba(60,35,20,.25)}
+#cap .ic{width:92px;height:92px;border-radius:50%;background:var(--blush);display:flex;align-items:center;justify-content:center;color:var(--brown)}
+#cap .ic svg{width:58px;height:58px}
+#cap .tx{font-family:'Batang',serif;font-weight:700;font-size:84px;line-height:1.1}
+.lm{left:0;top:0}
+.lm .d{position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;background:#fff;border:5px solid var(--rose);box-shadow:0 0 0 6px rgba(255,255,255,.35)}
+.lm .st{position:absolute;left:-1.5px;top:-118px;width:3px;height:108px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff)}
+.lm .lb{position:absolute;left:0;top:-196px;transform:translateX(-50%);white-space:nowrap;text-align:center;padding:12px 26px;border-radius:20px;background:rgba(251,246,238,.92);box-shadow:0 12px 30px rgba(40,25,15,.25)}
+.lm .lb b{font-family:'Batang',serif;font-weight:700;font-size:46px}
+.lm .lb small{display:block;font-size:24px;font-weight:700;color:var(--rose);letter-spacing:.06em;margin-top:2px}
+.bpin{left:0;top:0}
+.bp-halo{position:absolute;left:-210px;top:-210px;width:420px;height:420px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,200,190,0) 30%,rgba(255,200,190,.36) 62%,rgba(255,200,190,0))}
+.bp-shadow{position:absolute;left:-30px;top:-10px;width:60px;height:20px;border-radius:50%;background:rgba(90,50,40,.45)}
+.bp-ring{position:absolute;left:-42px;top:-42px;width:84px;height:84px;border-radius:50%;border:4px solid #fff}
+.bp-pin{position:absolute;left:-42px;top:-114px;width:84px;height:114px}
+#card{left:80px;width:920px;padding:30px 36px 32px;border-radius:28px;background:rgba(251,246,238,.97);text-align:center;border-top:12px solid var(--rose);box-shadow:0 22px 56px rgba(0,0,0,.35)}
+#card .k{font-size:19px;font-weight:800;letter-spacing:.26em;color:var(--rose)}
+#card .n{font-family:'Batang',serif;font-size:72px;font-weight:700;margin-top:6px}
+#card .b{font-size:36px;font-weight:800;margin-top:8px}
+#card .ad{font-size:28px;font-weight:600;color:var(--brown2);margin-top:6px}
+#info{left:80px;width:920px;border-radius:30px;background:rgba(251,246,238,.95);box-shadow:0 24px 60px rgba(0,0,0,.32);padding:14px 0}
+.row{display:flex;align-items:center;gap:24px;height:120px;padding:0 46px;border-top:2px solid var(--sand)}
+.row:first-child{border-top:none}
+.row .ic{width:76px;height:76px;border-radius:22px;background:var(--blush);display:flex;align-items:center;justify-content:center;flex:none}
+.row .ic svg{width:46px;height:46px}
+.row .lt{font-size:38px;font-weight:800}
+.row .ls{font-size:27px;font-weight:600;color:var(--brown2);margin-top:2px}
+.petal{position:absolute;left:0;top:0;width:24px;height:15px;border-radius:70% 0 70% 0}
+.bokeh{position:absolute;left:0;top:0;border-radius:50%}
+#attr{right:22px;bottom:16px;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.8);text-align:right}
+#black{background:#000}
+/* horizontal 1920x1080 */
+.fmt-h #title{top:300px}
+.fmt-h #veil{background:linear-gradient(180deg,rgba(251,246,238,.96) 0%,rgba(251,246,238,.85) 45%,rgba(251,246,238,0) 75%)}
+.fmt-h #remain{top:170px}
+.fmt-h #cap{top:240px}
+.fmt-h #card{left:auto;right:100px;width:760px}
+.fmt-h #info{left:100px;width:760px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="map"></div>
+  <div id="glow" class="layer"></div>
+  <div id="fxl" class="layer"></div>
+  <div id="ov" class="layer"></div>
+  <div id="veil" class="layer"></div>
+  <div id="ui" class="layer"></div>
+  <div id="black" class="layer"></div>
+</div>
+<script src="node_modules/maplibre-gl/dist/maplibre-gl.js"></script>
+<script src="journey.js"></script>
+</body>
+</html>

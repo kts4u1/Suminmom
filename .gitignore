@@ -1,0 +1,10 @@
+node_modules/
+video/assets/tiles/
+video/assets/dem/
+video/output/frames/
+video/output/frames_*/
+video/output/journey_frames*/
+video/output/stills/
+video/output/tiles*.txt
+video/output/audio*.wav
+video/output/*.log
